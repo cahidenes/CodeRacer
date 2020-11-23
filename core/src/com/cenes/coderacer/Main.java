@@ -18,6 +18,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sun.org.apache.xpath.internal.operations.Or;
 
 import java.io.BufferedReader;
@@ -42,6 +45,7 @@ public class Main extends ApplicationAdapter {
 	String[] code;
 	ArrayList<Character> typed;
 	ArrayList<Vector2> experienceCloud;
+	Viewport viewport;
 	int W = 1440;
 	int H = 810;
 	int dogruint = 0;
@@ -165,17 +169,23 @@ public class Main extends ApplicationAdapter {
 		param.borderWidth = 5;
 		bonusFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
 
+//		W = Gdx.graphics.getWidth();
+//		H = Gdx.graphics.getHeight();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, W, H);
 		batch = new SpriteBatch();
+		batch.setProjectionMatrix(camera.combined);
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
+		shapeRenderer.setProjectionMatrix(camera.combined);
 		typed = new ArrayList<>();
 		experienceCloud = new ArrayList<>();
 		stat_wpms = new ArrayList<>();
 		stat_wpms_dis = new ArrayList<>();
 		stat_yanlis_karakterler = new ArrayList<>();
 		stat_yanlis_sayilar = new ArrayList<>();
+		viewport = new FitViewport(Gdx.graphics.getWidth()*2, Gdx.graphics.getHeight()*2, camera);
+//		viewport = new FitViewport(W, H, camera);
 		satir1 = new ArrayList<>();
 		satir2 = new ArrayList<>();
         satir3 = new ArrayList<>();
@@ -1587,5 +1597,9 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-
+	@Override
+	public void resize(int width, int height) {
+		viewport.update(width, height);
+		super.resize(width, height);
+	}
 }
