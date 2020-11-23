@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
-// TODO: 11.11.2020 githuba yukle
-
 public class Main extends ApplicationAdapter {
 
 	BitmapFont font, geriSayimFont, yukaribuyukfont, yukarikucukfont, fontkotu, bonusFont, statFont, graphFont, shopFont;
