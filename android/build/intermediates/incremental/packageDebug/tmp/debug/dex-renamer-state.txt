@@ -1,0 +1,4 @@
+#Sun Nov 08 12:21:48 EET 2020
+base.0=/home/cahid/AndroidStudioProjects/CodeRacer2/android/build/intermediates/dex/debug/mergeDexDebug/out
+path.0=classes.dex
+renamed.0=classes.dex
