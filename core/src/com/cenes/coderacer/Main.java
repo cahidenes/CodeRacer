@@ -1252,7 +1252,7 @@ public class Main extends ApplicationAdapter {
 	String renklendir(String code){
 
 		String[] syntax1 = {"int", "double", "float", "long", "char", "string", "vector"};
-		String[] syntax2 = {"if", "while", "for", "return", "break", "continue", "switch", "case", "define", "typedef", "include", "using", "namespace", "import", "in"};
+		String[] syntax2 = {"if","else", "while", "for", "return", "break", "continue", "switch", "case", "define", "typedef", "include", "using", "namespace", "import", "in"};
 		String[] syntax3 = {"=", "+", "-", "*", "/", "<", ">", "^", "|", "&", "!", ".", ","};
 		String[] syntax4 = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 		String[] syntax5 = {"#", "(", ")", "{", "}", ";"};
