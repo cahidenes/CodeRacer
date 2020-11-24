@@ -1,0 +1,4 @@
+# echo '
+# #include <bits/stdc++.h> using namespace std; const int maxn = 1e2 + 5; vector<int> ans; string str[maxn]; int cnt[maxn], now[maxn]; int main() {     int n;          cin >> n;     for(int i = 0; i < n; i++)         cin >> str[i];     for(int i = 0; i < n; i++)         cin >> cnt[i];     bool p = 1;     while(p)     {         p = 0;         for(int i = 0; i < n; i++)         {             if(now[i] == cnt[i])             {                 p = 1;                 ans.push_back(i + 1);                 for(int j = 0; j < n; j++)                     now[j] += str[i][j] - "0";             }         }     }     cout << ans.size() << endl;     for(auto &e : ans)         cout << e << endl; }
+# ' | ./astyle
+echo "$@" | ./astyle --style=java --pad-oper --pad-comma --pad-header --delete-empty-lines --align-reference=type --max-code-length=73 --break-after-logical
