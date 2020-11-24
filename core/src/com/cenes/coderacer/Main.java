@@ -26,12 +26,17 @@ import com.sun.org.apache.xpath.internal.operations.Or;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
+
+// TODO: 11.11.2020 githuba yukle
 
 public class Main extends ApplicationAdapter {
 
@@ -55,6 +60,7 @@ public class Main extends ApplicationAdapter {
 	float cameraX = 0, cameraY = 0, cameraXhedef = 0;
 	boolean basladi = false;
 	int suanakadardogru = 0;
+	int totalcharacter = 0;
 	boolean disable_correct = false;
 	int played = 0;
 	int yuk1 = -1, yuk2 = -1, yuk3 = -1;
@@ -80,7 +86,7 @@ public class Main extends ApplicationAdapter {
 	Texture text_dogru1, text_dogru3, text_dogru5, text_dogru10, text_dogruinf;
 	Texture text_bonus2, text_bonus4, text_bonus8, text_bonus16, text_bonus32;
 	Texture text_bonus_back, shop, race, stats, loading, fetching, cursor_t, cursor_kotu, tick,
-            keyboard, tus1, tus2, tus3, tus4, tus5, tus6, tus7, tus8, exit;
+			keyboard, tus1, tus2, tus3, tus4, tus5, tus6, tus7, tus8, exit;
 	Animation<TextureRegion> loadingAnimation;
 
 	Color mavi, kirmizi, turuncu, mor;
@@ -131,50 +137,41 @@ public class Main extends ApplicationAdapter {
 		param.color = Color.WHITE;
 		font = new FreeTypeFontGenerator(Gdx.files.internal("kod2.ttf")).generateFont(param);
 		font.getData().markupEnabled = true;
-		font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
-        fontkotu = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-        fontkotu.getData().markupEnabled = true;
-        fontkotu.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		fontkotu = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		fontkotu.getData().markupEnabled = true;
 
 		param.size = 200;
 		param.color = mavi;
 		geriSayimFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
 		geriSayimFont.getData().markupEnabled = false;
-		geriSayimFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 50;
 		param.color = Color.BLACK;
 		yukaribuyukfont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-		yukaribuyukfont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 40;
 		param.color = Color.WHITE;
 		statFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
 		statFont.getData().markupEnabled = true;
-		statFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 30;
 		param.color = Color.BLACK;
 		yukarikucukfont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-		yukarikucukfont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.color = mavi;
 		shopFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-		shopFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 
 		param.color = Color.WHITE;
 		param.size = 20;
 		graphFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-		graphFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.color = Color.WHITE;
 		param.borderColor = Color.BLACK;
 		param.size = 50;
 		param.borderWidth = 5;
 		bonusFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
-		bonusFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 //		W = Gdx.graphics.getWidth();
 //		H = Gdx.graphics.getHeight();
@@ -195,12 +192,12 @@ public class Main extends ApplicationAdapter {
 //		viewport = new FitViewport(W, H, camera);
 		satir1 = new ArrayList<>();
 		satir2 = new ArrayList<>();
-        satir3 = new ArrayList<>();
-        satir4 = new ArrayList<>();
-        for (int i = 0; i < 13; i++) satir1.add(0f);
-        for (int i = 0; i < 12; i++) satir2.add(0f);
-        for (int i = 0; i < 12; i++) satir3.add(0f);
-        for (int i = 0; i < 10; i++) satir4.add(0f);
+		satir3 = new ArrayList<>();
+		satir4 = new ArrayList<>();
+		for (int i = 0; i < 13; i++) satir1.add(0f);
+		for (int i = 0; i < 12; i++) satir2.add(0f);
+		for (int i = 0; i < 12; i++) satir3.add(0f);
+		for (int i = 0; i < 10; i++) satir4.add(0f);
 
 		preferences = Gdx.app.getPreferences("coderacer");
 		stat_yazilankarakter = preferences.getInteger("stat_yazilankarakter", 0);
@@ -287,29 +284,29 @@ public class Main extends ApplicationAdapter {
 		fetching.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 		cursor_t = new Texture(Gdx.files.internal("cursor.png"));
 		cursor_t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        cursor_kotu = new Texture(Gdx.files.internal("cursor_kotu.png"));
+		cursor_kotu = new Texture(Gdx.files.internal("cursor_kotu.png"));
 		cursor_kotu.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tick = new Texture(Gdx.files.internal("tick.png"));
+		tick = new Texture(Gdx.files.internal("tick.png"));
 		tick.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        keyboard = new Texture(Gdx.files.internal("keyboard.png"));
-        keyboard.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus1 = new Texture(Gdx.files.internal("tus1.png"));
+		keyboard = new Texture(Gdx.files.internal("keyboard.png"));
+		keyboard.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		tus1 = new Texture(Gdx.files.internal("tus1.png"));
 		tus1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus2 = new Texture(Gdx.files.internal("tus2.png"));
+		tus2 = new Texture(Gdx.files.internal("tus2.png"));
 		tus2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus3 = new Texture(Gdx.files.internal("tus3.png"));
+		tus3 = new Texture(Gdx.files.internal("tus3.png"));
 		tus3.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus4 = new Texture(Gdx.files.internal("tus4.png"));
+		tus4 = new Texture(Gdx.files.internal("tus4.png"));
 		tus4.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus5 = new Texture(Gdx.files.internal("tus5.png"));
+		tus5 = new Texture(Gdx.files.internal("tus5.png"));
 		tus5.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus6 = new Texture(Gdx.files.internal("tus6.png"));
+		tus6 = new Texture(Gdx.files.internal("tus6.png"));
 		tus6.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus7 = new Texture(Gdx.files.internal("tus7.png"));
+		tus7 = new Texture(Gdx.files.internal("tus7.png"));
 		tus7.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        tus8 = new Texture(Gdx.files.internal("tus8.png"));
+		tus8 = new Texture(Gdx.files.internal("tus8.png"));
 		tus8.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        exit = new Texture(Gdx.files.internal("exit.png"));
+		exit = new Texture(Gdx.files.internal("exit.png"));
 		exit.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 
@@ -331,7 +328,7 @@ public class Main extends ApplicationAdapter {
 
 				if (bitti) return true;
 				if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!`?'.,;:()[]{}<>|/@\\^$€-%+=#_&~* \n".contains(String.valueOf(character)) && basladi && timer < 0){
-                    typesound();
+					typesound();
 					if (dogruint == cursorj && cursorj < code[cursori].length() && code[cursori].charAt(cursorj) == character){
 						dogruint++;
 						dogruBasti();
@@ -346,24 +343,24 @@ public class Main extends ApplicationAdapter {
 						if (code[cursori].length() == cursorj) yanlisaekle('\n');
 						else yanlisaekle(code[cursori].charAt(cursorj));
 
-					    if (code[cursori].length() == cursorj){
-                            toplamdogrular += code[cursori].length();
-                            cursori++;
-                            dogruBasti();
-                            cursorj = 0;
-                            dogruint = 0;
-                            typed.clear();
-                            while (cursori < code.length && cursorj < code[cursori].length() && code[cursori].charAt(cursorj) == ' '){
-                                cursorj++;
-                                typed.add(' ');
-                                dogruint++;
-                            }
-                        } else {
-                            dogruint++;
-                            dogruBasti();
+						if (code[cursori].length() == cursorj){
+							toplamdogrular += code[cursori].length();
+							cursori++;
+							dogruBasti();
+							cursorj = 0;
+							dogruint = 0;
+							typed.clear();
+							while (cursori < code.length && cursorj < code[cursori].length() && code[cursori].charAt(cursorj) == ' '){
+								cursorj++;
+								typed.add(' ');
+								dogruint++;
+							}
+						} else {
+							dogruint++;
+							dogruBasti();
 							cursorj++;
 							typed.add(character);
-                        }
+						}
 						if (code.length-1 == cursori && code[cursori].length() == dogruint){
 							bitti();
 						}
@@ -383,9 +380,9 @@ public class Main extends ApplicationAdapter {
 
 			@Override
 			public boolean keyDown(int keycode) {
-                System.out.println("keycode = " + keycode);
+				System.out.println("keycode = " + keycode);
 
-                if (keycode == Input.Keys.SPACE && !basladi && baslaYhedef == 0){
+				if (keycode == Input.Keys.SPACE && !basladi && baslaYhedef == 0){
 					start.play(0.5f);
 					shopXhedef = -400;
 					statisticsXhedef = 400;
@@ -398,6 +395,11 @@ public class Main extends ApplicationAdapter {
 								str = getRandomCode();
 							} while (str.equals("Hata") || str.length() > 700);
 							code = str.split("\n");
+							totalcharacter = 0;
+							for (int i = 0 ; i < code.length; i ++){
+								totalcharacter += code[i].replaceFirst("\\s+","").length()+1;
+							}
+							//System.out.println(totalcharacter + " <- this code contains that much char");
 							basladi = true;
 							cursori = 0;
 							cursorj = 0;
@@ -408,17 +410,17 @@ public class Main extends ApplicationAdapter {
 					}).start();
 				}
 
-                if (bitti) return true;
+				if (bitti) return true;
 				if (!(basladi && timer < 0)) return true;
 				if (keycode == Input.Keys.BACKSPACE){
 					typesound();
 					if (typed.size() > dogruint){
-					   	cursorj--;
-					    typed.remove(typed.size()-1);
-                    }
+						cursorj--;
+						typed.remove(typed.size()-1);
+					}
 				} else if (keycode == Input.Keys.ENTER){
 					typesound();
-                    if (code[cursori].length() == typed.size() && typed.size() == dogruint){
+					if (code[cursori].length() == typed.size() && typed.size() == dogruint){
 						toplamdogrular += code[cursori].length();
 						cursori++;
 						dogruBasti();
@@ -430,9 +432,9 @@ public class Main extends ApplicationAdapter {
 							typed.add(' ');
 							dogruint++;
 						}
-                    } else {
-                    	if (correctCount > 0){ // corrected
-                    		correctCount--;
+					} else {
+						if (correctCount > 0){ // corrected
+							correctCount--;
 							dogruint++;
 							dogruBasti();
 							cursorj++;
@@ -445,7 +447,7 @@ public class Main extends ApplicationAdapter {
 							typed.add('\n');
 						}
 					}
-                } else if (keycode == Input.Keys.ESCAPE){
+				} else if (keycode == Input.Keys.ESCAPE){
 					basladi = false;
 					geriSayim = "";
 					goster = "";
@@ -461,65 +463,65 @@ public class Main extends ApplicationAdapter {
 				}
 
 				switch (keycode){
-                    case 68: satir1.set(0, 1f); break;
-                    case Input.Keys.NUM_1: satir1.set(1, 1f); break;
-                    case Input.Keys.NUM_2: satir1.set(2, 1f); break;
-                    case Input.Keys.NUM_3: satir1.set(3, 1f); break;
-                    case Input.Keys.NUM_4: satir1.set(4, 1f); break;
-                    case Input.Keys.NUM_5: satir1.set(5, 1f); break;
-                    case Input.Keys.NUM_6: satir1.set(6, 1f); break;
-                    case Input.Keys.NUM_7: satir1.set(7, 1f); break;
-                    case Input.Keys.NUM_8: satir1.set(8, 1f); break;
-                    case Input.Keys.NUM_9: satir1.set(9, 1f); break;
-                    case Input.Keys.NUM_0: satir1.set(10, 1f); break;
-                    case Input.Keys.MINUS: satir1.set(11, 1f); break;
-                    case Input.Keys.EQUALS: satir1.set(12, 1f); break;
+					case 68: satir1.set(0, 1f); break;
+					case Input.Keys.NUM_1: satir1.set(1, 1f); break;
+					case Input.Keys.NUM_2: satir1.set(2, 1f); break;
+					case Input.Keys.NUM_3: satir1.set(3, 1f); break;
+					case Input.Keys.NUM_4: satir1.set(4, 1f); break;
+					case Input.Keys.NUM_5: satir1.set(5, 1f); break;
+					case Input.Keys.NUM_6: satir1.set(6, 1f); break;
+					case Input.Keys.NUM_7: satir1.set(7, 1f); break;
+					case Input.Keys.NUM_8: satir1.set(8, 1f); break;
+					case Input.Keys.NUM_9: satir1.set(9, 1f); break;
+					case Input.Keys.NUM_0: satir1.set(10, 1f); break;
+					case Input.Keys.MINUS: satir1.set(11, 1f); break;
+					case Input.Keys.EQUALS: satir1.set(12, 1f); break;
 
-                    case Input.Keys.Q: satir2.set(0, 1f); break;
-                    case Input.Keys.W: satir2.set(1, 1f); break;
-                    case Input.Keys.E: satir2.set(2, 1f); break;
-                    case Input.Keys.R: satir2.set(3, 1f); break;
-                    case Input.Keys.T: satir2.set(4, 1f); break;
-                    case Input.Keys.Y: satir2.set(5, 1f); break;
-                    case Input.Keys.U: satir2.set(6, 1f); break;
-                    case Input.Keys.I: satir2.set(7, 1f); break;
-                    case Input.Keys.O: satir2.set(8, 1f); break;
-                    case Input.Keys.P: satir2.set(9, 1f); break;
-                    case 71: satir2.set(10, 1f); break;
-                    case 72: satir2.set(11, 1f); break;
+					case Input.Keys.Q: satir2.set(0, 1f); break;
+					case Input.Keys.W: satir2.set(1, 1f); break;
+					case Input.Keys.E: satir2.set(2, 1f); break;
+					case Input.Keys.R: satir2.set(3, 1f); break;
+					case Input.Keys.T: satir2.set(4, 1f); break;
+					case Input.Keys.Y: satir2.set(5, 1f); break;
+					case Input.Keys.U: satir2.set(6, 1f); break;
+					case Input.Keys.I: satir2.set(7, 1f); break;
+					case Input.Keys.O: satir2.set(8, 1f); break;
+					case Input.Keys.P: satir2.set(9, 1f); break;
+					case 71: satir2.set(10, 1f); break;
+					case 72: satir2.set(11, 1f); break;
 
-                    case Input.Keys.A: satir3.set(0, 1f); break;
-                    case Input.Keys.S: satir3.set(1, 1f); break;
-                    case Input.Keys.D: satir3.set(2, 1f); break;
-                    case Input.Keys.F: satir3.set(3, 1f); break;
-                    case Input.Keys.G: satir3.set(4, 1f); break;
-                    case Input.Keys.H: satir3.set(5, 1f); break;
-                    case Input.Keys.J: satir3.set(6, 1f); break;
-                    case Input.Keys.K: satir3.set(7, 1f); break;
-                    case Input.Keys.L: satir3.set(8, 1f); break;
-                    case 74: satir3.set(9, 1f); break;
-                    case 75: satir3.set(10, 1f); break;
-                    case Input.Keys.BACKSLASH: satir3.set(11, 1f); break;
+					case Input.Keys.A: satir3.set(0, 1f); break;
+					case Input.Keys.S: satir3.set(1, 1f); break;
+					case Input.Keys.D: satir3.set(2, 1f); break;
+					case Input.Keys.F: satir3.set(3, 1f); break;
+					case Input.Keys.G: satir3.set(4, 1f); break;
+					case Input.Keys.H: satir3.set(5, 1f); break;
+					case Input.Keys.J: satir3.set(6, 1f); break;
+					case Input.Keys.K: satir3.set(7, 1f); break;
+					case Input.Keys.L: satir3.set(8, 1f); break;
+					case 74: satir3.set(9, 1f); break;
+					case 75: satir3.set(10, 1f); break;
+					case Input.Keys.BACKSLASH: satir3.set(11, 1f); break;
 
-                    case Input.Keys.Z: satir4.set(0, 1f); break;
-                    case Input.Keys.X: satir4.set(1, 1f); break;
-                    case Input.Keys.C: satir4.set(2, 1f); break;
-                    case Input.Keys.V: satir4.set(3, 1f); break;
-                    case Input.Keys.B: satir4.set(4, 1f); break;
-                    case Input.Keys.N: satir4.set(5, 1f); break;
-                    case Input.Keys.M: satir4.set(6, 1f); break;
-                    case Input.Keys.COMMA: satir4.set(7, 1f); break;
-                    case Input.Keys.PERIOD: satir4.set(8, 1f); break;
-                    case Input.Keys.SLASH: satir4.set(9, 1f); break;
+					case Input.Keys.Z: satir4.set(0, 1f); break;
+					case Input.Keys.X: satir4.set(1, 1f); break;
+					case Input.Keys.C: satir4.set(2, 1f); break;
+					case Input.Keys.V: satir4.set(3, 1f); break;
+					case Input.Keys.B: satir4.set(4, 1f); break;
+					case Input.Keys.N: satir4.set(5, 1f); break;
+					case Input.Keys.M: satir4.set(6, 1f); break;
+					case Input.Keys.COMMA: satir4.set(7, 1f); break;
+					case Input.Keys.PERIOD: satir4.set(8, 1f); break;
+					case Input.Keys.SLASH: satir4.set(9, 1f); break;
 
-                    case Input.Keys.TAB: sayactus2 = 1f; break;
+					case Input.Keys.TAB: sayactus2 = 1f; break;
 
-                    case Input.Keys.SHIFT_LEFT: sayactus4 = 1f; break;
-                    case Input.Keys.BACKSPACE: sayactus5 = 1f; break;
-                    case Input.Keys.ENTER: sayactus6 = 1f; break;
-                    case Input.Keys.SHIFT_RIGHT: sayactus7 = 1f; break;
-                    case Input.Keys.SPACE: sayactus8 = 1f; break;
-                }
+					case Input.Keys.SHIFT_LEFT: sayactus4 = 1f; break;
+					case Input.Keys.BACKSPACE: sayactus5 = 1f; break;
+					case Input.Keys.ENTER: sayactus6 = 1f; break;
+					case Input.Keys.SHIFT_RIGHT: sayactus7 = 1f; break;
+					case Input.Keys.SPACE: sayactus8 = 1f; break;
+				}
 				return super.keyDown(keycode);
 			}
 
@@ -549,7 +551,7 @@ public class Main extends ApplicationAdapter {
 					} else if ((W - 300) / 2 < screenX && screenX < (W - 300) / 2 + 300) {
 						// play
 //						geriSayim = "Fetching Code";
-                        start.play();
+						start.play();
 						shopXhedef = -400;
 						statisticsXhedef = 400;
 						baslaYhedef = -600;
@@ -559,8 +561,12 @@ public class Main extends ApplicationAdapter {
 								String str = "";
 								do {
 									str = getRandomCode();
-								} while (str.equals("Hata") || str.length() > 700);
+								} while (str.equals("Hata") || str.length() > 250);
 								code = str.split("\n");
+								totalcharacter = 0;
+								for (int i = 0 ; i < code.length; i ++){
+									totalcharacter += code[i].replaceFirst("\\s+","").length()+1;
+								}
 								basladi = true;
 								cursori = 0;
 								cursorj = 0;
@@ -613,7 +619,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_sound;
 							recalculateProgress();
 							bool_sound = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 4){
@@ -621,7 +627,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_syntax;
 							recalculateProgress();
 							bool_syntax = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 5){
@@ -629,7 +635,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_imlec;
 							recalculateProgress();
 							bool_imlec = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					}
@@ -639,7 +645,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_dogru1;
 							recalculateProgress();
 							bool_dogru1 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 2){
@@ -647,7 +653,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_dogru3;
 							recalculateProgress();
 							bool_dogru3 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 3){
@@ -655,7 +661,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_dogru5;
 							recalculateProgress();
 							bool_dogru5 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 4){
@@ -663,7 +669,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_dogru10;
 							recalculateProgress();
 							bool_dogru10 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 5){
@@ -671,7 +677,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_dogruinf;
 							recalculateProgress();
 							bool_dogruinf = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					}
@@ -681,7 +687,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_bonus2;
 							recalculateProgress();
 							bool_bonus2 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 2){
@@ -689,7 +695,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_bonus4;
 							recalculateProgress();
 							bool_bonus4 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 3){
@@ -697,7 +703,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_bonus8;
 							recalculateProgress();
 							bool_bonus8 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 4){
@@ -705,7 +711,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_bonus16;
 							recalculateProgress();
 							bool_bonus16 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					} else if (col == 5){
@@ -713,7 +719,7 @@ public class Main extends ApplicationAdapter {
 							progressLvl -= bool_bonus32;
 							recalculateProgress();
 							bool_bonus32 = 0;
-                            purchase.play();
+							purchase.play();
 							saveShop();
 						}
 					}
@@ -879,56 +885,56 @@ public class Main extends ApplicationAdapter {
 				batch.draw(cursor_kotu, cameraX + (-5 + kodX + 30 * 0.6f * cursorj), cameraY + H - (-5 + kodY + 30), 5, 30);
 		}
 
-        // keyboard
-        if (bool_imlec == 0) {
-            float kw = 700;
-            float m = kw / 500f;
-            float kh = kw * (168f / 500f);
-            float kx = W - kw - 10;
-            float ky = 10 - 600 - basla_y;
+		// keyboard
+		if (bool_imlec == 0) {
+			float kw = 700;
+			float m = kw / 500f;
+			float kh = kw * (168f / 500f);
+			float kx = W - kw - 10;
+			float ky = 10 - 600 - basla_y;
 
-            batch.draw(keyboard, kx, ky, kw, kh);
+			batch.draw(keyboard, kx, ky, kw, kh);
 
-            for (int i = 0; i < 13; i++) {
-                batch.setColor(1, 1, 1, satir1.get(i));
-                batch.draw(tus1, kx + (1.5f + i * 34.8f) * m, ky + 140 * m, 27 * m, 27 * m);
-            }
-            batch.setColor(1, 1, 1, sayactus5);
-            batch.draw(tus5, kx + 454f * m, ky + 140 * m, 45 * m, 27 * m);
+			for (int i = 0; i < 13; i++) {
+				batch.setColor(1, 1, 1, satir1.get(i));
+				batch.draw(tus1, kx + (1.5f + i * 34.8f) * m, ky + 140 * m, 27 * m, 27 * m);
+			}
+			batch.setColor(1, 1, 1, sayactus5);
+			batch.draw(tus5, kx + 454f * m, ky + 140 * m, 45 * m, 27 * m);
 
-            for (int i = 0; i < 12; i++) {
-                batch.setColor(1, 1, 1, satir2.get(i));
-                batch.draw(tus1, kx + (45 + i * 34.8f) * m, ky + 106 * m, 27 * m, 27 * m);
-            }
-            batch.setColor(1, 1, 1, sayactus2);
-            batch.draw(tus2, kx + 1.5f * m, ky + 106 * m, 35 * m, 27 * m);
+			for (int i = 0; i < 12; i++) {
+				batch.setColor(1, 1, 1, satir2.get(i));
+				batch.draw(tus1, kx + (45 + i * 34.8f) * m, ky + 106 * m, 27 * m, 27 * m);
+			}
+			batch.setColor(1, 1, 1, sayactus2);
+			batch.draw(tus2, kx + 1.5f * m, ky + 106 * m, 35 * m, 27 * m);
 
-            for (int i = 0; i < 12; i++) {
-                batch.setColor(1, 1, 1, satir3.get(i));
-                batch.draw(tus1, kx + (54 + i * 34.8f) * m, ky + 71.5f * m, 27 * m, 27 * m);
-            }
-            batch.setColor(1, 1, 1, sayactus3);
-            batch.draw(tus3, kx + 1.5f * m, ky + 72f * m, 45 * m, 27 * m);
-            batch.setColor(1, 1, 1, sayactus6);
-            batch.draw(tus6, kx + 460 * m, ky + 72 * m, 40 * m, 61 * m);
+			for (int i = 0; i < 12; i++) {
+				batch.setColor(1, 1, 1, satir3.get(i));
+				batch.draw(tus1, kx + (54 + i * 34.8f) * m, ky + 71.5f * m, 27 * m, 27 * m);
+			}
+			batch.setColor(1, 1, 1, sayactus3);
+			batch.draw(tus3, kx + 1.5f * m, ky + 72f * m, 45 * m, 27 * m);
+			batch.setColor(1, 1, 1, sayactus6);
+			batch.draw(tus6, kx + 460 * m, ky + 72 * m, 40 * m, 61 * m);
 
-            for (int i = 0; i < 10; i++) {
-                batch.setColor(1, 1, 1, satir4.get(i));
-                batch.draw(tus1, kx + (63 + i * 34.8f) * m, ky + 36 * m, 27 * m, 27 * m);
-            }
-            batch.setColor(1, 1, 1, sayactus4);
-            batch.draw(tus4, kx + 1.5f * m, ky + 36 * m, 55 * m, 27 * m);
-            batch.setColor(1, 1, 1, sayactus7);
-            batch.draw(tus7, kx + 412 * m, ky + 36 * m, 88 * m, 27 * m);
+			for (int i = 0; i < 10; i++) {
+				batch.setColor(1, 1, 1, satir4.get(i));
+				batch.draw(tus1, kx + (63 + i * 34.8f) * m, ky + 36 * m, 27 * m, 27 * m);
+			}
+			batch.setColor(1, 1, 1, sayactus4);
+			batch.draw(tus4, kx + 1.5f * m, ky + 36 * m, 55 * m, 27 * m);
+			batch.setColor(1, 1, 1, sayactus7);
+			batch.draw(tus7, kx + 412 * m, ky + 36 * m, 88 * m, 27 * m);
 
-            batch.setColor(1, 1, 1, sayactus8);
-            batch.draw(tus8, kx + 117 * m, ky + 1 * m, 230 * m, 27 * m);
-        }
-        batch.setColor(1, 1, 1, 1);
-        batch.end();
+			batch.setColor(1, 1, 1, sayactus8);
+			batch.draw(tus8, kx + 117 * m, ky + 1 * m, 230 * m, 27 * m);
+		}
+		batch.setColor(1, 1, 1, 1);
+		batch.end();
 
 
-        // yukari bar
+		// yukari bar
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(mavi);
 		shapeRenderer.rect(0, H - 100, W, 100);
@@ -941,6 +947,19 @@ public class Main extends ApplicationAdapter {
 		shapeRenderer.rect(400 + 3, H - 75 + 3, W - 800 - 6, 30 - 6);
 		shapeRenderer.setColor(mor);
 		shapeRenderer.rect(400, H - 75, (W - 800) * ((float) progressActual / progressMax), 30);
+
+		// Race Progress Bar
+		// This bar help user understand where he is and how much text remain
+		if (basladi){
+			// padding of our progress bar
+			int barPadding = 3;
+			// Background rect for race bar
+			shapeRenderer.setColor(mor);
+			shapeRenderer.rect(W/4, H-150 , W / 2 , 30);
+			// Race Bar itself
+			shapeRenderer.setColor(mavi);
+			shapeRenderer.rect(W/4 + barPadding, H-150 + barPadding  , (W / 2 - 2*barPadding) * (suanakadardogru*1.0f/ totalcharacter) , 30 - 2 * barPadding);
+		}
 		shapeRenderer.end();
 
 		batch.begin();
@@ -1049,10 +1068,10 @@ public class Main extends ApplicationAdapter {
 		// shop
 		batch.begin();
 		batch.draw(text_font, cameraX + -W + 450, H - 300, 150, 150);
-        batch.draw(text_dark, cameraX + -W + 650, H - 300, 150, 150);
-        batch.draw(text_sound, cameraX + -W + 850, H - 300, 150, 150);
-        batch.draw(text_syntax, cameraX + -W + 1050, H - 300, 150, 150);
-        batch.draw(text_imlec, cameraX + -W + 1250, H - 300, 150, 150);
+		batch.draw(text_dark, cameraX + -W + 650, H - 300, 150, 150);
+		batch.draw(text_sound, cameraX + -W + 850, H - 300, 150, 150);
+		batch.draw(text_syntax, cameraX + -W + 1050, H - 300, 150, 150);
+		batch.draw(text_imlec, cameraX + -W + 1250, H - 300, 150, 150);
 
 		batch.draw(text_dogru1, cameraX + -W + 450, H - 525, 150, 150);
 		batch.draw(text_dogru3, cameraX + -W + 650, H - 525, 150, 150);
@@ -1104,7 +1123,7 @@ public class Main extends ApplicationAdapter {
 			Random r = new Random();
 			int contestId = r.nextInt(1442);
 			if (contestId < 15){
-			    return "print(\"thats it\");";
+				return "print(\"thats it\");";
 			}
 			int submissionNumber = r.nextInt(1000) + 1;
 			String randomcontest = "https://codeforces.com/api/contest.status?contestId=" + contestId + "&from=" + submissionNumber + "&count=1";
@@ -1132,7 +1151,7 @@ public class Main extends ApplicationAdapter {
 			int submissionId = Integer.parseInt(idstr);
 
 			String urlString = "https://codeforces.com/contest/" + contestId + "/submission/" + submissionId;
-            System.out.println(urlString);
+			System.out.println(urlString);
 
 			URL url = new URL(urlString);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -1161,9 +1180,9 @@ public class Main extends ApplicationAdapter {
 			str = str.replaceAll("&lt;", "<");
 			str = str.replaceAll("&gt;", ">");
 			str = str.replace("&quot;", "\"");
-            str = str.replace("&amp;", "&");
-            str = str.replace("&#39;", "'");
-            str = str.replace("\t", "    ");
+			str = str.replace("&amp;", "&");
+			str = str.replace("&#39;", "'");
+			str = str.replace("\t", "    ");
 			str = str.replaceAll("[^\\\\ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!?'.,;:()\\[\\]{}<>|/@^$€\\-%+=#_&~*\\n]", "");
 
 			int last = 0;
@@ -1322,7 +1341,7 @@ public class Main extends ApplicationAdapter {
 			} else {
 				dondur += code.charAt(i);
 			}
-        }
+		}
 
 		return dondur;
 	}
@@ -1334,6 +1353,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	void dogruBasti(){
+		//hackermode on
+		//progressEkle(100000);
+
 		suanakadardogru++;
 		if (bonusTopla >= 0) bonusBackScl = 1f;
 
@@ -1562,24 +1584,24 @@ public class Main extends ApplicationAdapter {
 	}
 
 	void saveShop(){
-		 preferences.putInteger("bool_font", bool_font);
-		 preferences.putInteger("bool_dark", bool_dark);
-		 preferences.putInteger("bool_sound", bool_sound);
-		 preferences.putInteger("bool_syntax", bool_syntax);
-		 preferences.putInteger("bool_imlec", bool_imlec);
-		 preferences.putInteger("bool_dogru1", bool_dogru1);
-		 preferences.putInteger("bool_dogru3", bool_dogru3);
-		 preferences.putInteger("bool_dogru5", bool_dogru5);
-		 preferences.putInteger("bool_dogru10", bool_dogru10);
-		 preferences.putInteger("bool_dogruinf", bool_dogruinf);
-		 preferences.putInteger("bool_bonus2", bool_bonus2);
-		 preferences.putInteger("bool_bonus4", bool_bonus4);
-		 preferences.putInteger("bool_bonus8", bool_bonus8);
-		 preferences.putInteger("bool_bonus16", bool_bonus16);
-		 preferences.putInteger("bool_bonus32", bool_bonus32);
-		 preferences.putInteger("progressCur", progressCur);
-		 preferences.putInteger("progressLvl", progressLvl);
-		 preferences.flush();
+		preferences.putInteger("bool_font", bool_font);
+		preferences.putInteger("bool_dark", bool_dark);
+		preferences.putInteger("bool_sound", bool_sound);
+		preferences.putInteger("bool_syntax", bool_syntax);
+		preferences.putInteger("bool_imlec", bool_imlec);
+		preferences.putInteger("bool_dogru1", bool_dogru1);
+		preferences.putInteger("bool_dogru3", bool_dogru3);
+		preferences.putInteger("bool_dogru5", bool_dogru5);
+		preferences.putInteger("bool_dogru10", bool_dogru10);
+		preferences.putInteger("bool_dogruinf", bool_dogruinf);
+		preferences.putInteger("bool_bonus2", bool_bonus2);
+		preferences.putInteger("bool_bonus4", bool_bonus4);
+		preferences.putInteger("bool_bonus8", bool_bonus8);
+		preferences.putInteger("bool_bonus16", bool_bonus16);
+		preferences.putInteger("bool_bonus32", bool_bonus32);
+		preferences.putInteger("progressCur", progressCur);
+		preferences.putInteger("progressLvl", progressLvl);
+		preferences.flush();
 	}
 
 	void yanlisaekle(char c){
