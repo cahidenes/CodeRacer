@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
-// TODO: 11.11.2020 githuba yukle
-
 public class Main extends ApplicationAdapter {
 
 	BitmapFont font, geriSayimFont, yukaribuyukfont, yukarikucukfont, fontkotu, bonusFont, statFont, graphFont, shopFont;
@@ -133,41 +131,50 @@ public class Main extends ApplicationAdapter {
 		param.color = Color.WHITE;
 		font = new FreeTypeFontGenerator(Gdx.files.internal("kod2.ttf")).generateFont(param);
 		font.getData().markupEnabled = true;
+		font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         fontkotu = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
         fontkotu.getData().markupEnabled = true;
+        fontkotu.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 200;
 		param.color = mavi;
 		geriSayimFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
 		geriSayimFont.getData().markupEnabled = false;
+		geriSayimFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 50;
 		param.color = Color.BLACK;
 		yukaribuyukfont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		yukaribuyukfont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 40;
 		param.color = Color.WHITE;
 		statFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
 		statFont.getData().markupEnabled = true;
+		statFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.size = 30;
 		param.color = Color.BLACK;
 		yukarikucukfont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		yukarikucukfont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.color = mavi;
 		shopFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		shopFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 
 		param.color = Color.WHITE;
 		param.size = 20;
 		graphFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		graphFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		param.color = Color.WHITE;
 		param.borderColor = Color.BLACK;
 		param.size = 50;
 		param.borderWidth = 5;
 		bonusFont = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf")).generateFont(param);
+		bonusFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 //		W = Gdx.graphics.getWidth();
 //		H = Gdx.graphics.getHeight();
