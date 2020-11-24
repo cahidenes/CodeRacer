@@ -55,6 +55,7 @@ public class Main extends ApplicationAdapter {
 	float cameraX = 0, cameraY = 0, cameraXhedef = 0;
 	boolean basladi = false;
 	int suanakadardogru = 0;
+	int totalcharacter = 0;
 	boolean disable_correct = false;
 	int played = 0;
 	int yuk1 = -1, yuk2 = -1, yuk3 = -1;
@@ -398,6 +399,10 @@ public class Main extends ApplicationAdapter {
 								str = getRandomCode();
 							} while (str.equals("Hata") || str.length() > 700);
 							code = str.split("\n");
+							totalcharacter = 0;
+							for (int i = 0 ; i < code.length; i ++){
+								totalcharacter += code[i].replaceFirst("\\s+","").length()+1;
+							}
 							basladi = true;
 							cursori = 0;
 							cursorj = 0;
@@ -561,6 +566,10 @@ public class Main extends ApplicationAdapter {
 									str = getRandomCode();
 								} while (str.equals("Hata") || str.length() > 700);
 								code = str.split("\n");
+								totalcharacter = 0;
+								for (int i = 0 ; i < code.length; i ++){
+									totalcharacter += code[i].replaceFirst("\\s+","").length()+1;
+								}
 								basladi = true;
 								cursori = 0;
 								cursorj = 0;
@@ -941,6 +950,19 @@ public class Main extends ApplicationAdapter {
 		shapeRenderer.rect(400 + 3, H - 75 + 3, W - 800 - 6, 30 - 6);
 		shapeRenderer.setColor(mor);
 		shapeRenderer.rect(400, H - 75, (W - 800) * ((float) progressActual / progressMax), 30);
+
+		// Race Progress Bar
+		// This bar help user understand where he is and how much text remain
+		if (basladi){
+			// padding of our progress bar
+			int barPadding = 3;
+			// Background rect for race bar
+			shapeRenderer.setColor(mor);
+			shapeRenderer.rect(W/4, H-150 , W / 2 , 30);
+			// Race Bar itself
+			shapeRenderer.setColor(mavi);
+			shapeRenderer.rect(W/4 + barPadding, H-150 + barPadding  , (W / 2 - 2*barPadding) * (suanakadardogru*1.0f/ totalcharacter) , 30 - 2 * barPadding);
+		}
 		shapeRenderer.end();
 
 		batch.begin();
