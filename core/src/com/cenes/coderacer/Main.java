@@ -1056,7 +1056,7 @@ public class Main extends ApplicationAdapter {
             str = str.replace("\t", "    ");
 			str = str.replaceAll("[^\\\\ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890\"!?'.,;:()\\[\\]{}<>|/@^$€\\-%+=#_&~*\\n]", "");
 
-			//str = CodeFormatter.format(str);
+			str = CodeFormatter.format(str);
 
 			int last = 0;
 			while (str.substring(last).contains("\n")){
