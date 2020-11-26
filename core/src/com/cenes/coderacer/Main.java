@@ -33,6 +33,10 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
+/*
+UUPS There IS SOME MINOR MISCALCULATION IN IN-RACE PROGRESSBAR
+ */
+
 public class Main extends ApplicationAdapter {
 
 	BitmapFont font, geriSayimFont, yukaribuyukfont, yukarikucukfont, fontkotu, bonusFont, statFont, graphFont, shopFont;
@@ -73,13 +77,6 @@ public class Main extends ApplicationAdapter {
 	int correctCount = 0;
 	float kodActualH = 0;
 
-	int bool_font = 10, bool_dark = 15, bool_sound = 20, bool_syntax = 25, bool_imlec = 30;
-	int bool_dogru1 = 30, bool_dogru3 = 50, bool_dogru5 = 75, bool_dogru10 = 100, bool_dogruinf = 1000;
-	int bool_bonus2 = 1, bool_bonus4 = 1, bool_bonus8 = 1, bool_bonus16 = 1, bool_bonus32 = 1;
-
-	Texture text_font, text_dark, text_sound, text_syntax, text_imlec;
-	Texture text_dogru1, text_dogru3, text_dogru5, text_dogru10, text_dogruinf;
-	Texture text_bonus2, text_bonus4, text_bonus8, text_bonus16, text_bonus32;
 	Texture text_bonus_back, shop, race, stats, loading, fetching, cursor_t, cursor_kotu, tick,
             keyboard, tus1, tus2, tus3, tus4, tus5, tus6, tus7, tus8, exit;
 	Animation<TextureRegion> loadingAnimation;
@@ -96,9 +93,33 @@ public class Main extends ApplicationAdapter {
 	private float exptimer;
 	private int expplay;
 
+	ArrayList<ShopItem> shopList;
+
 	// 1 -> font, dark theme, typing sound, syntax coloring, imlec
 	// 2 -> bastigini dogruya cevien 1, 3, 5, 10, inf
 	// 3 -> max bonus 2x, 4x, 8x, 16x, 32x
+
+	void initializeShopList(){
+		shopList = new ArrayList<ShopItem>();
+
+		shopList.add(new ShopItem("font" , 16 , false));
+		shopList.add(new ShopItem("dark" , 20 , new String[] {"font"} ,false));
+		shopList.add(new ShopItem("sound" , 23  , new String[] {"dark"} ,false));
+		shopList.add(new ShopItem("syntax" , 27  , new String[] {"sound"} ,false ));
+		shopList.add(new ShopItem("imlec" , 30 , new String[] {"syntax"} ,true));
+		shopList.add(new ShopItem("dogru1" , 30,false));
+		shopList.add(new ShopItem("dogru3" , 31 , new String[] {"dogru1"},false));
+		shopList.add(new ShopItem("dogru5" , 32 , new String[] {"dogru3"},false));
+		shopList.add(new ShopItem("dogru10" , 33 , new String[] {"dogru5"},false));
+		shopList.add(new ShopItem("dogruinf" , 40 , new String[] {"dogru10"},false));
+		shopList.add(new ShopItem("bonus2" , 25,false));
+		shopList.add(new ShopItem("bonus4" , 29 , new String[] {"bonus2"},false));
+		shopList.add(new ShopItem("bonus8" , 31 , new String[] {"bonus4"},false));
+		shopList.add(new ShopItem("bonus16" , 33 , new String[] {"bonus8"},false));
+		shopList.add(new ShopItem("bonus32" , 35 , new String[] {"bonus16"},false));
+	}
+
+
 	@Override
 	public void create () {
 
@@ -216,21 +237,10 @@ public class Main extends ApplicationAdapter {
 			stat_wpms.add(preferences.getInteger("stat_wpms_"+i));
 		for (int i = 0; i < stat_racecount_dis; i++)
 			stat_wpms_dis.add(preferences.getInteger("stat_wpms_dis_"+i));
-		bool_font = preferences.getInteger("bool_font", 16);
-		bool_dark = preferences.getInteger("bool_dark", 20);
-		bool_sound = preferences.getInteger("bool_sound", 23);
-		bool_syntax = preferences.getInteger("bool_syntax", 27);
-		bool_imlec = preferences.getInteger("bool_imlec", 30);
-		bool_dogru1 = preferences.getInteger("bool_dogru1", 30);
-		bool_dogru3 = preferences.getInteger("bool_dogru3", 31);
-		bool_dogru5 = preferences.getInteger("bool_dogru5", 32);
-		bool_dogru10 = preferences.getInteger("bool_dogru10", 33);
-		bool_dogruinf = preferences.getInteger("bool_dogruinf", 40);
-		bool_bonus2 = preferences.getInteger("bool_bonus2", 25);
-		bool_bonus4 = preferences.getInteger("bool_bonus4", 29);
-		bool_bonus8 = preferences.getInteger("bool_bonus8", 31);
-		bool_bonus16 = preferences.getInteger("bool_bonus16", 33);
-		bool_bonus32 = preferences.getInteger("bool_bonus32", 35);
+
+
+		initializeShopList();
+
 		progressCur = preferences.getInteger("progressCur", 0);
 		progressLvl = preferences.getInteger("progressLvl", 0);
 		int stat_yanlis_count = preferences.getInteger("stat_yanlis_count", 0);
@@ -240,39 +250,6 @@ public class Main extends ApplicationAdapter {
 		}
 		recalculateProgress();
 		calculateYuks();
-
-		text_font = new Texture(Gdx.files.internal("shop_font.png"));
-		text_font.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_dark = new Texture(Gdx.files.internal("shop_dark.png"));
-		text_dark.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_sound = new Texture(Gdx.files.internal("shop_sound.png"));
-		text_sound.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_syntax = new Texture(Gdx.files.internal("shop_syntax.png"));
-		text_syntax.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_imlec = new Texture(Gdx.files.internal("shop_imlec.png"));
-		text_imlec.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-
-		text_dogru1 = new Texture(Gdx.files.internal("shop_dogru1.png"));
-		text_dogru1.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_dogru3 = new Texture(Gdx.files.internal("shop_dogru3.png"));
-		text_dogru3.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_dogru5 = new Texture(Gdx.files.internal("shop_dogru5.png"));
-		text_dogru5.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_dogru10 = new Texture(Gdx.files.internal("shop_dogru10.png"));
-		text_dogru10.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_dogruinf = new Texture(Gdx.files.internal("shop_dogruinf.png"));
-		text_dogruinf.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-
-		text_bonus2 = new Texture(Gdx.files.internal("shop_bonus2.png"));
-		text_bonus2.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_bonus4 = new Texture(Gdx.files.internal("shop_bonus4.png"));
-		text_bonus4.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_bonus8 = new Texture(Gdx.files.internal("shop_bonus8.png"));
-		text_bonus8.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_bonus16 = new Texture(Gdx.files.internal("shop_bonus16.png"));
-		text_bonus16.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-		text_bonus32 = new Texture(Gdx.files.internal("shop_bonus32.png"));
-		text_bonus32.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
 		text_bonus_back = new Texture(Gdx.files.internal("bonus_back.png"));
 		text_bonus_back.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -600,130 +577,30 @@ public class Main extends ApplicationAdapter {
 				System.out.println("row = " + row);
 				System.out.println("col = " + col);
 
-				if (row == 1){
-					if (col == 1){
-						if (bool_font > 0 && bool_font <= progressLvl){
-							progressLvl -= bool_font;
-							recalculateProgress();
-							bool_font = 0;
-							purchase.play();
-							saveShop();
-						}
-					} else if (col == 2){
-						if (bool_font == 0 && bool_dark > 0 && progressLvl >= bool_dark){
-							progressLvl -= bool_dark;
-							recalculateProgress();
-							bool_dark = 0;
-							purchase.play();
-							saveShop();
-						}
-					} else if (col == 3){
-						if (bool_dark == 0 && bool_sound > 0 && progressLvl >= bool_sound){
-							progressLvl -= bool_sound;
-							recalculateProgress();
-							bool_sound = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 4){
-						if (bool_sound == 0 && bool_syntax > 0 && progressLvl >= bool_syntax){
-							progressLvl -= bool_syntax;
-							recalculateProgress();
-							bool_syntax = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 5){
-						if (bool_syntax == 0 && bool_imlec > 0 && progressLvl >= bool_imlec){
-							progressLvl -= bool_imlec;
-							recalculateProgress();
-							bool_imlec = 0;
-                            purchase.play();
-							saveShop();
-						}
+				// this block of code will allow us to manage all unlocking operations in shop
+				if (row !=0  && col != 0){
+					// this means some shope element clicked
+					int itemId = (row-1) * 5 + col - 1;
+					ShopItem itemToBuy = shopList.get(itemId);
+
+					// checks if required items satisfies
+
+					if (itemToBuy.IsLocked() && (itemToBuy.GetRequiredLevel() <= progressLvl && itemToBuy.IsRequiredItemsSatisfies())) {
+						progressLvl -= itemToBuy.GetRequiredLevel();
+						recalculateProgress();
+						itemToBuy.Unlock();
+						purchase.play();
+
+						// this method does not save shop pref anymore
+						// it is handled by Unlock method above
+						// instead it saves progress data
+						saveShop();// review needed
 					}
-				} else if (row == 2){
-					if (col == 1){
-						if (bool_dogru1 > 0 && bool_dogru1 <= progressLvl){
-							progressLvl -= bool_dogru1;
-							recalculateProgress();
-							bool_dogru1 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 2){
-						if (bool_dogru1 == 0 && bool_dogru3 > 0 && progressLvl >= bool_dogru3){
-							progressLvl -= bool_dogru3;
-							recalculateProgress();
-							bool_dogru3 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 3){
-						if (bool_dogru3 == 0 && bool_dogru5 > 0 && progressLvl >= bool_dogru5){
-							progressLvl -= bool_dogru5;
-							recalculateProgress();
-							bool_dogru5 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 4){
-						if (bool_dogru5 == 0 && bool_dogru10 > 0 && progressLvl >= bool_dogru10){
-							progressLvl -= bool_dogru10;
-							recalculateProgress();
-							bool_dogru10 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 5){
-						if (bool_dogru10 == 0 && bool_dogruinf > 0 && progressLvl >= bool_dogruinf){
-							progressLvl -= bool_dogruinf;
-							recalculateProgress();
-							bool_dogruinf = 0;
-                            purchase.play();
-							saveShop();
-						}
-					}
-				} else if (row == 3){
-					if (col == 1){
-						if (bool_bonus2 > 0 && bool_bonus2 <= progressLvl){
-							progressLvl -= bool_bonus2;
-							recalculateProgress();
-							bool_bonus2 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 2){
-						if (bool_bonus2 == 0 && bool_bonus4 > 0 && progressLvl >= bool_bonus4){
-							progressLvl -= bool_bonus4;
-							recalculateProgress();
-							bool_bonus4 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 3){
-						if (bool_bonus4 == 0 && bool_bonus8 > 0 && progressLvl >= bool_bonus8){
-							progressLvl -= bool_bonus8;
-							recalculateProgress();
-							bool_bonus8 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 4){
-						if (bool_bonus8 == 0 && bool_bonus16 > 0 && progressLvl >= bool_bonus16){
-							progressLvl -= bool_bonus16;
-							recalculateProgress();
-							bool_bonus16 = 0;
-                            purchase.play();
-							saveShop();
-						}
-					} else if (col == 5){
-						if (bool_bonus16 == 0 && bool_bonus32 > 0 && progressLvl >= bool_bonus32){
-							progressLvl -= bool_bonus32;
-							recalculateProgress();
-							bool_bonus32 = 0;
-                            purchase.play();
-							saveShop();
+					else if (!itemToBuy.IsLocked() && itemToBuy.IsUnequippable()){
+						if (itemToBuy.IsEquipped()){
+							itemToBuy.Unequip();
+						}else{
+							itemToBuy.Equip();
 						}
 					}
 				}
@@ -737,8 +614,9 @@ public class Main extends ApplicationAdapter {
 	public void render () {
 		animationTimer += Gdx.graphics.getDeltaTime();
 		Color backcolor = new Color(0x333333ff);
-		if (bool_dark != 0) Gdx.gl.glClearColor(1, 1, 1, 1);
+		if (!ShopItem.IsEquipped("dark"))Gdx.gl.glClearColor(1, 1, 1, 1);
 		else Gdx.gl.glClearColor(backcolor.r, backcolor.g, backcolor.b, backcolor.a);
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if (basladi) {
 			bonusTimer += Gdx.graphics.getDeltaTime();
@@ -756,12 +634,14 @@ public class Main extends ApplicationAdapter {
 				say = 0;
 				wmpUpdateTimer = 0;
 				bonusTopla = 0;
-				if (bool_dogru1 > 0) correctCount = 0;
-				else if (bool_dogru3 > 0) correctCount = 1;
-				else if (bool_dogru5 > 0) correctCount = 3;
-				else if (bool_dogru10 > 0) correctCount = 5;
-				else if (bool_dogruinf > 0) correctCount = 10;
-				else correctCount = 1000000;
+
+				if (!ShopItem.IsEquipped("dogru1")) correctCount = 0;
+				else if (!ShopItem.IsEquipped("dogru3")) correctCount = 1;
+				else if (!ShopItem.IsEquipped("dogru5")) correctCount = 3;
+				else if (!ShopItem.IsEquipped("dogru10")) correctCount = 5;
+				else if (!ShopItem.IsEquipped("dogruinf")) correctCount = 10;
+				else correctCount = 10000000;
+
 				if (disable_correct) correctCount = 0;
 				played = 0;
 			} else {
@@ -814,9 +694,11 @@ public class Main extends ApplicationAdapter {
 		}
 
 		// bonus
-		if (bool_sound == 0)
+		if (ShopItem.IsEquipped("sound")){
 			progressActual += Math.min((progressCur - progressActual) * Gdx.graphics.getDeltaTime() * 10, progressMax / 50f);
+		}
 		else progressActual = progressCur;
+
 
 		if (progressActual > progressMax) { // lvl up
 			progressLvl++;
@@ -827,12 +709,13 @@ public class Main extends ApplicationAdapter {
 		}
 
 		// cameraX
-		if (bool_sound == 0)
+		if (ShopItem.IsEquipped("sound")){
 			cameraX += (cameraXhedef - cameraX) * Gdx.graphics.getDeltaTime() * 10f;
-		else cameraX = cameraXhedef;
+		}else cameraX = cameraXhedef;
+
 
 		// menu
-		if (bool_sound == 0) {
+		if (ShopItem.IsEquipped("sound")) {
 			shop_x += (shopXhedef - shop_x) * Gdx.graphics.getDeltaTime() * 5f;
 			statistics_x += (statisticsXhedef - statistics_x) * Gdx.graphics.getDeltaTime() * 5f;
 			basla_y += (baslaYhedef - basla_y) * Gdx.graphics.getDeltaTime() * 5f;
@@ -843,6 +726,7 @@ public class Main extends ApplicationAdapter {
 			basla_y = baslaYhedef;
 			loadingY = loadingYhedef;
 		}
+
 
 		for (int i = 0; i < 13; i++) satir1.set(i, satir1.get(i)*(1-Gdx.graphics.getDeltaTime()*3f));
 		for (int i = 0; i < 12; i++) satir2.set(i, satir2.get(i)*(1-Gdx.graphics.getDeltaTime()*3f));
@@ -857,7 +741,7 @@ public class Main extends ApplicationAdapter {
 		sayactus8 -= sayactus8*Gdx.graphics.getDeltaTime()*3f;
 
 		// code H
-		if (bool_sound == 0) kodActualH += (cursori - kodActualH)*Gdx.graphics.getDeltaTime()*20f;
+		if (ShopItem.IsEquipped("sound"))kodActualH += (cursori - kodActualH)*Gdx.graphics.getDeltaTime()*20f;
 		else kodActualH = cursori;
 
 		// ----------------------- renders -----------------------------//
@@ -867,29 +751,32 @@ public class Main extends ApplicationAdapter {
 		// hata kirmizi
 		shapeRenderer.setColor(kirmizi);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		if (bool_font == 0)
+		if (ShopItem.IsEquipped("font")){
 			shapeRenderer.rect(cameraX + (-5 + kodX + 30 * 0.6f * dogruint), cameraY + H - (-5 + kodY + 30), 18 * (typed.size() - dogruint), 30);
+		}
 		shapeRenderer.end();
 
 		// yazilar
 		batch.begin();
-		if (basladi && bool_font == 0)
+		if (basladi && ShopItem.IsEquipped("font"))
 			font.draw(batch, goster, cameraX + kodX, cameraY + H - kodY + 40 * kodActualH, W - 100, -1, true);
 		else if (basladi)
 			fontkotu.draw(batch, goster, cameraX + kodX, cameraY + H - kodY + 40 * kodActualH, W - 100, -1, true);
+
 		geriSayimFont.draw(batch, geriSayim, cameraX, cameraY + H / 2f + 100, W, 1, false);
 
 
 		// cursor
-		if (basladi && bool_font == 0) {
-			if (bool_imlec == 0)
+		if (basladi && ShopItem.IsEquipped("font")) {
+			if (ShopItem.IsEquipped("imlec"))
 				batch.draw(cursor_t, cameraX + (-5 + kodX + 30 * 0.6f * cursorj), cameraY + H - (-5 + kodY + 45), 10, 60);
-			if (bool_imlec > 0)
+			if (!ShopItem.IsEquipped("imlec"))
 				batch.draw(cursor_kotu, cameraX + (-5 + kodX + 30 * 0.6f * cursorj), cameraY + H - (-5 + kodY + 30), 5, 30);
 		}
 
+
         // keyboard
-        if (bool_imlec == 0) {
+		if (ShopItem.IsEquipped("imlec")){
             float kw = 700;
             float m = kw / 500f;
             float kh = kw * (168f / 500f);
@@ -958,10 +845,10 @@ public class Main extends ApplicationAdapter {
 			int barPadding = 3;
 			// Background rect for race bar
 			shapeRenderer.setColor(mor);
-			shapeRenderer.rect(W/4, H-150 , W / 2 , 30);
+			shapeRenderer.rect(0, H-130 , W , 30);
 			// Race Bar itself
 			shapeRenderer.setColor(mavi);
-			shapeRenderer.rect(W/4 + barPadding, H-150 + barPadding  , (W / 2 - 2*barPadding) * (suanakadardogru*1.0f/ totalcharacter) , 30 - 2 * barPadding);
+			shapeRenderer.rect( barPadding, H-130 + barPadding  , (W - 2*barPadding) * (suanakadardogru*1.0f/ totalcharacter) , 30 - 2 * barPadding);
 		}
 		shapeRenderer.end();
 
@@ -1069,42 +956,23 @@ public class Main extends ApplicationAdapter {
 		if (cameraX < -10) drawGraph();
 
 		// shop
+
+		// Draw Shop Items
 		batch.begin();
-		batch.draw(text_font, cameraX + -W + 450, H - 300, 150, 150);
-        batch.draw(text_dark, cameraX + -W + 650, H - 300, 150, 150);
-        batch.draw(text_sound, cameraX + -W + 850, H - 300, 150, 150);
-        batch.draw(text_syntax, cameraX + -W + 1050, H - 300, 150, 150);
-        batch.draw(text_imlec, cameraX + -W + 1250, H - 300, 150, 150);
-
-		batch.draw(text_dogru1, cameraX + -W + 450, H - 525, 150, 150);
-		batch.draw(text_dogru3, cameraX + -W + 650, H - 525, 150, 150);
-		batch.draw(text_dogru5, cameraX + -W + 850, H - 525, 150, 150);
-		batch.draw(text_dogru10, cameraX + -W + 1050, H - 525, 150, 150);
-		batch.draw(text_dogruinf, cameraX + -W + 1250, H - 525, 150, 150);
-
-		batch.draw(text_bonus2, cameraX + -W + 450, H - 750, 150, 150);
-		batch.draw(text_bonus4, cameraX + -W + 650, H - 750, 150, 150);
-		batch.draw(text_bonus8, cameraX + -W + 850, H - 750, 150, 150);
-		batch.draw(text_bonus16, cameraX + -W + 1050, H - 750, 150, 150);
-		batch.draw(text_bonus32, cameraX + -W + 1250, H - 750, 150, 150);
-
-		shopFont.draw(batch, (bool_font > 0) ? bool_font + " lvl" : "purchased", cameraX + -W + 450, H - 150, 150, 1, false);
-		shopFont.draw(batch, (bool_dark > 0) ? ((bool_font == 0) ? bool_dark + " lvl" : "locked") : "purchased", cameraX + -W + 650, H - 150, 150, 1, false);
-		shopFont.draw(batch, (bool_sound > 0) ? ((bool_dark == 0) ? bool_sound + " lvl" : "locked") : "purchased", cameraX + -W + 850, H - 150, 150, 1, false);
-		shopFont.draw(batch, (bool_syntax > 0) ? ((bool_sound == 0) ? bool_syntax + " lvl" : "locked") : "purchased", cameraX + -W + 1050, H - 150, 150, 1, false);
-		shopFont.draw(batch, (bool_imlec > 0) ? ((bool_syntax == 0) ? bool_imlec + " lvl" : "locked") : "purchased", cameraX + -W + 1250, H - 150, 150, 1, false);
-
-		shopFont.draw(batch, (bool_dogru1 > 0) ? bool_dogru1 + " lvl" : "purchased", cameraX + -W + 450, H - 375, 150, 1, false);
-		shopFont.draw(batch, (bool_dogru3 > 0) ? ((bool_dogru1 == 0) ? bool_dogru3 + " lvl" : "locked") : "purchased", cameraX + -W + 650, H - 375, 150, 1, false);
-		shopFont.draw(batch, (bool_dogru5 > 0) ? ((bool_dogru3 == 0) ? bool_dogru5 + " lvl" : "locked") : "purchased", cameraX + -W + 850, H - 375, 150, 1, false);
-		shopFont.draw(batch, (bool_dogru10 > 0) ? ((bool_dogru5 == 0) ? bool_dogru10 + " lvl" : "locked") : "purchased", cameraX + -W + 1050, H - 375, 150, 1, false);
-		shopFont.draw(batch, (bool_dogruinf > 0) ? ((bool_dogru10 == 0) ? bool_dogruinf + " lvl" : "locked") : "purchased", cameraX + -W + 1250, H - 375, 150, 1, false);
-
-		shopFont.draw(batch, (bool_bonus2 > 0) ? bool_bonus2 + " lvl" : "purchased", cameraX + -W + 450, H - 600, 150, 1, false);
-		shopFont.draw(batch, (bool_bonus4 > 0) ? ((bool_bonus2 == 0) ? bool_bonus4 + " lvl" : "locked") : "purchased", cameraX + -W + 650, H - 600, 150, 1, false);
-		shopFont.draw(batch, (bool_bonus8 > 0) ? ((bool_bonus4 == 0) ? bool_bonus8 + " lvl" : "locked") : "purchased", cameraX + -W + 850, H - 600, 150, 1, false);
-		shopFont.draw(batch, (bool_bonus16 > 0) ? ((bool_bonus8 == 0) ? bool_bonus16 + " lvl" : "locked") : "purchased", cameraX + -W + 1050, H - 600, 150, 1, false);
-		shopFont.draw(batch, (bool_bonus32 > 0) ? ((bool_bonus16 == 0) ? bool_bonus32 + " lvl" : "locked") : "purchased", cameraX + -W + 1250, H - 600, 150, 1, false);
+		int row = 3 , col = 5;
+		for (int i = 0; i < row; i ++){
+			for (int j = 0 ; j < col ; j ++){
+				int itemId = i*col + j;
+				batch.draw(shopList.get(itemId).GetImage(), cameraX + -W + 450 + j * 200 , H-300 - (i*225) , 150 , 150);
+				String message = "";
+				if (shopList.get(itemId).IsLocked()){
+					message = shopList.get(itemId).IsRequiredItemsSatisfies() ? shopList.get(itemId).GetRequiredLevel() + " lvl" : "locked";
+				}else {
+					message = !shopList.get(itemId).IsUnequippable()? "purchased" : shopList.get(itemId).IsEquipped() ? "equipped" : "unequipped";
+				}
+				shopFont.draw(batch, message,cameraX + -W + 450 + j * 200 , H-150 - (i*225) , 150 , 1 , false );
+			}
+		}
 
 		yukaribuyukfont.draw(batch, String.format("%.2f", say), 25, H - 25);
 		yukaribuyukfont.draw(batch, ""+wpm +" wpm", 25, H - 25, W-100, 0, false);
@@ -1206,8 +1074,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	String highlight(String[] code){
+
 		try {
-			if (bool_font != 0) {
+			if (!ShopItem.IsEquipped("font")) {
 
 				String ret = "[#00ff00ff]";
 				for (int i = 0; i < cursori; i++) {
@@ -1222,8 +1091,8 @@ public class Main extends ApplicationAdapter {
 				ret = ret.replace("ツ", "[[");
 				return ret;
 
-			} else if (bool_dark != 0) {
 
+			}else if (!ShopItem.IsEquipped("dark")) {
 				String ret = "[#00ff00ff]";
 				for (int i = 0; i < cursori; i++) {
 					ret += code[i].replace('[', 'ツ') + '\n';
@@ -1237,8 +1106,7 @@ public class Main extends ApplicationAdapter {
 				ret = ret.replace("ツ", "[[");
 				return ret;
 
-			} else if (bool_syntax != 0) {
-
+			}else if (!ShopItem.IsEquipped("syntax")){
 				String ret = "[#ffffffff]";
 				for (int i = 0; i < cursori; i++) {
 					ret += code[i].replace('[', 'ツ') + '\n';
@@ -1400,11 +1268,11 @@ public class Main extends ApplicationAdapter {
 	}
 
 	int getBonus(int a){
-		if (bool_bonus2 > 0) return Math.min(a, 1);
-		else if (bool_bonus4 > 0) return Math.min(a, 2);
-		else if (bool_bonus8 > 0) return Math.min(a, 4);
-		else if (bool_bonus16 > 0) return Math.min(a, 8);
-		else if (bool_bonus32 > 0) return Math.min(a, 16);
+		if (!ShopItem.IsEquipped("bonus2")) return Math.min(a, 1);
+		else if (!ShopItem.IsEquipped("bonus4")) return Math.min(a, 2);
+		else if (!ShopItem.IsEquipped("bonus8")) return Math.min(a, 4);
+		else if (!ShopItem.IsEquipped("bonus16")) return Math.min(a, 8);
+		else if (!ShopItem.IsEquipped("bonus32")) return Math.min(a, 16);
 		else return Math.min(a, 32);
 	}
 
@@ -1418,6 +1286,10 @@ public class Main extends ApplicationAdapter {
 	}
 
 	void progressEkle(int amount){
+
+		// !!! this is a hack
+		// !!! amount *= 10000;
+
 		progressCur += amount;
 		stat_toplampuan += amount;
 	}
@@ -1435,7 +1307,7 @@ public class Main extends ApplicationAdapter {
 		loadingYhedef = 0;
 		bonusBackScl = 0f;
 		wpm = (int) ((suanakadardogru) / (5f * say / 60f));
-		if (disable_correct || bool_dogru1 > 0){
+		if (disable_correct || !ShopItem.IsEquipped("dogru1")){
 			stat_wpms_dis.add(wpm);
 			stat_best_dis = Math.max(stat_best_dis, wpm);
 			stat_worst_dis = Math.min(stat_worst_dis, wpm);
@@ -1485,7 +1357,7 @@ public class Main extends ApplicationAdapter {
 		if (disable_correct) wpms = stat_wpms_dis;
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		if (bool_dark == 0) shapeRenderer.setColor(Color.WHITE);
+		if (ShopItem.IsEquipped("dark")) shapeRenderer.setColor(Color.WHITE);
 		else shapeRenderer.setColor(Color.BLACK);
 		int maxDeger = 0;
 		for (int wpm: wpms){
@@ -1586,21 +1458,6 @@ public class Main extends ApplicationAdapter {
 	}
 
 	void saveShop(){
-		 preferences.putInteger("bool_font", bool_font);
-		 preferences.putInteger("bool_dark", bool_dark);
-		 preferences.putInteger("bool_sound", bool_sound);
-		 preferences.putInteger("bool_syntax", bool_syntax);
-		 preferences.putInteger("bool_imlec", bool_imlec);
-		 preferences.putInteger("bool_dogru1", bool_dogru1);
-		 preferences.putInteger("bool_dogru3", bool_dogru3);
-		 preferences.putInteger("bool_dogru5", bool_dogru5);
-		 preferences.putInteger("bool_dogru10", bool_dogru10);
-		 preferences.putInteger("bool_dogruinf", bool_dogruinf);
-		 preferences.putInteger("bool_bonus2", bool_bonus2);
-		 preferences.putInteger("bool_bonus4", bool_bonus4);
-		 preferences.putInteger("bool_bonus8", bool_bonus8);
-		 preferences.putInteger("bool_bonus16", bool_bonus16);
-		 preferences.putInteger("bool_bonus32", bool_bonus32);
 		 preferences.putInteger("progressCur", progressCur);
 		 preferences.putInteger("progressLvl", progressLvl);
 		 preferences.flush();
